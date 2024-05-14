@@ -1,0 +1,60 @@
+1. Inspect the environment variables set on the running container and identify the value set to the APP_COLOR variable.
+
+$ docker ps
+CONTAINER ID   IMAGE                     COMMAND           CREATED              STATUS              PORTS      NAMES
+9ca19d8bf410   kodekloud/simple-webapp   "python app.py"   About a minute ago   Up About a minute   8080/tcp   vigorous_payne
+
+$ docker exec -it vigorous_payne env
+PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=9ca19d8bf410
+TERM=xterm
+APP_COLOR=pink
+LANG=C.UTF-8
+GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
+PYTHON_VERSION=3.6.6
+PYTHON_PIP_VERSION=18.1
+HOME=/root
+
+=> pink
+
+===========================================================
+
+2. Run a container named blue-app using image kodekloud/simple-webapp and set the environment variable APP_COLOR to blue. Make the application available on port 38282 on the host. The application listens on port 8080.
+
+$ docker run -p 38282:8080 --name blue-app -e APP_COLOR=blue -d kodekloud/simple-webapp
+e80d877ee8fe72fde67fb86d0f9a32513c43918bcaaaf92d21d3b8d48ad1c30d
+
+$ docker exec -it blue-app env
+PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=e80d877ee8fe
+TERM=xterm
+APP_COLOR=blue
+LANG=C.UTF-8
+GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
+PYTHON_VERSION=3.6.6
+PYTHON_PIP_VERSION=18.1
+HOME=/root
+
+===========================================================
+
+3. View the application by clicking the link HOST:38282 above your terminal and ensure it has the right color.
+
+===========================================================
+
+4. Deploy a mysql database using the mysql image and name it mysql-db. Set the database password to use db_pass123. 
+Lookup the mysql image on Docker Hub and identify the correct environment variable to use for setting the root password.
+
+$ docker run -d -e MYSQL_ROOT_PASSWORD=db_pass123 --name mysql-db mysql
+b2e3d2425b85c2f89ad9e21831e2fc1fabcb4fae9c7008286577eed363800a0b
+
+$ docker exec -it mysql-db env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=b2e3d2425b85
+TERM=xterm
+MYSQL_ROOT_PASSWORD=db_pass123
+GOSU_VERSION=1.16
+MYSQL_MAJOR=8.0
+MYSQL_VERSION=8.0.33-1.el8
+MYSQL_SHELL_VERSION=8.0.33-1.el8
+HOME=/root
+

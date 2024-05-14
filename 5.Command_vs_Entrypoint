@@ -1,0 +1,69 @@
+1. Dockerfiles for a few commonly used Docker Images are given in the /root (current) directory. Inspect them and try to answer the following questions.
+
+$ ls
+Dockerfile-mysql   Dockerfile-ubuntu     app
+Dockerfile-python  Dockerfile-wordpress
+
+===========================================================
+
+2. What is the ENTRYPOINT configured on the mysql image?
+
+$ cat Dockerfile-mysql 
+FROM debian:stretch-slim
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+.
+.
+.
+ENTRYPOINT ["docker-entrypoint.sh"]
+EXPOSE 3306 33060
+CMD ["mysqld"]
+
+=> docker-entrypoint.sh
+
+===========================================================
+
+3. What is the CMD configured on the wordpress image?
+
+$ cat Dockerfile-wordpress 
+FROM php:7.1-apache
+# install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
+RUN set -ex; \
+.
+.
+.
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["apache2-foreground"]
+
+=> apache2-foreground
+
+===========================================================
+
+4. What is the final command run at startup when the wordpress image is run. Consider both ENTRYPOINT and CMD instructions
+
+=> docker-entrypoint.sh apache2-foreground
+
+===========================================================
+
+5. What is the command run at startup when the ubuntu image is run?
+
+$ cat Dockerfile-ubuntu    
+# Ubuntu Dockerfile
+# https://github.com/dockerfile/ubuntu
+# Pull base image.
+FROM ubuntu:14.04
+.
+.
+.
+# Define default command.
+CMD ["bash"]
+
+
+=> bash
+
+===========================================================
+
+6. Run an instance of the ubuntu image to run the sleep 1000 command at startup.
+
+$ docker run -d ubuntu sleep 1000
+46d26b61a0c19b2781e6b0561b6588786f3aa6a01f263b20576e78cebca3410f
+

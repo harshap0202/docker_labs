@@ -1,0 +1,84 @@
+1. First create a redis database container called redis, image redis:alpine. if you are unsure, check the hints section for the exact commands.
+
+$ docker run -d --name=redis redis:alpine
+Unable to find image 'redis:alpine' locally
+alpine: Pulling from library/redis
+4abcf2066143: Pull complete 
+5c3180d10209: Pull complete 
+f76326fd8e6b: Pull complete 
+034c076ba1e7: Pull complete 
+dffcad17539b: Pull complete 
+5913474e0f39: Pull complete 
+4f4fb700ef54: Pull complete 
+cc6fccbbefa3: Pull complete 
+Digest: sha256:a40e29800d387e3cf9431902e1e7a362e4d819233d68ae39380532c3310091ac
+Status: Downloaded newer image for redis:alpine
+a6cfa8387ab700424b604d872a0e83f8e1231fdc2cdb2c50ad4030a3636ee065
+
+===========================================================
+
+2. Next, create a simple container called clickcounter with the image kodekloud/click-counter, link it to the redis container that we created in the previous task and then expose it on the host port 8085
+The clickcounter app run on port 5000. if you are unsure, check the hints section for the exact commands.
+
+$ docker run -d -p 8085:5000 --name=clickcounter --link redis:redis kodekloud/click-counter
+Unable to find image 'kodekloud/click-counter:latest' locally
+latest: Pulling from kodekloud/click-counter
+540db60ca938: Pull complete 
+a7ad1a75a999: Pull complete 
+37ce6546d5dd: Pull complete 
+ec9e91bed5a2: Pull complete 
+767433e10bb0: Pull complete 
+156f0b0493cb: Pull complete 
+3fe82d8a2401: Pull complete 
+4a41f7c94204: Pull complete 
+473063430a4f: Pull complete 
+452c68a16ccd: Pull complete 
+Digest: sha256:530e4532a718e8f5cbda05844a6c0638ebe8898fa4c4307ee6afbdd5d1f213db
+Status: Downloaded newer image for kodekloud/click-counter:latest
+4725e416968f65016414eeb175ac9d17163213c7b3d4382e666b8dfea03ff037
+
+===========================================================
+
+3. You can now access this application using the Click-Counter tab above the terminal.
+Refresh the page and see the count increase.
+
+===========================================================
+
+4. Let's clean up the actions carried out in previous steps. Delete the redis and the clickcounter containers.
+
+$ docker ps
+CONTAINER ID   IMAGE                     COMMAND                  CREATED              STATUS          PORTS                    NAMES
+4725e416968f   kodekloud/click-counter   "flask run"              About a minute ago   Up 59 seconds   0.0.0.0:8085->5000/tcp   clickcounter
+767a99c99e6d   redis:alpine              "docker-entrypoint.s…"   4 minutes ago        Up 4 minutes    6379/tcp                 redis
+
+$ docker stop 47 76
+47      
+76
+
+$ docker rm 47 76
+47
+76
+
+===========================================================
+
+5. Create a docker-compose.yml file under the directory /root/clickcounter. Once done, run docker-compose up. The compose file should have the exact specification as follows -
+redis service specification - Image name should be redis:alpine.
+clickcounter service specification - Image name should be kodekloud/click-counter, app is run on port 5000 and expose it on the host port 8085 in the compose file.
+
+$ nano docker-compose.yml
+
+$ cat docker-compose.yml 
+services:
+  redis:
+    image: redis:alpine
+  clickcounter:
+    image: kodekloud/click-counter
+    ports:
+    - 8085:5000
+version: '3.0'
+
+$ docker-compose up -d
+Creating network "clickcounter_default" with the default driver
+Recreating clickcounter_redis_1        ... done
+Recreating clickcounter_clickcounter_1 ... done
+

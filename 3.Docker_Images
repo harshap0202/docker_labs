@@ -1,0 +1,175 @@
+1. How many images are available on this host?
+
+$ docker images
+REPOSITORY                      TAG       IMAGE ID       CREATED         SIZE
+redis                           latest    eca1379fe8b5   13 months ago   117MB
+mysql                           latest    8189e588b0e8   13 months ago   564MB
+nginx                           latest    6efc10a0510f   13 months ago   142MB
+postgres                        latest    ceccf204404e   13 months ago   379MB
+nginx                           alpine    8e75cbc5b25c   13 months ago   41MB
+alpine                          latest    9ed4aefc74f6   13 months ago   7.04MB
+ubuntu                          latest    08d22c0ceb15   14 months ago   77.8MB
+kodekloud/simple-webapp-mysql   latest    129dd9f67367   5 years ago     96.6MB
+kodekloud/simple-webapp         latest    c6e3cd9aae36   5 years ago     84.8MB
+
+=> 9
+
+===========================================================
+
+2. What is the size of the ubuntu image?
+
+=> 77.8MB
+
+===========================================================
+
+3. We just pulled a new image. What is the tag on the newly pulled NGINX image?
+
+$ docker images
+REPOSITORY                      TAG           IMAGE ID       CREATED         SIZE
+redis                           latest        eca1379fe8b5   13 months ago   117MB
+mysql                           latest        8189e588b0e8   13 months ago   564MB
+nginx                           latest        6efc10a0510f   13 months ago   142MB
+postgres                        latest        ceccf204404e   13 months ago   379MB
+nginx                           alpine        8e75cbc5b25c   13 months ago   41MB
+alpine                          latest        9ed4aefc74f6   13 months ago   7.04MB
+ubuntu                          latest        08d22c0ceb15   14 months ago   77.8MB
+nginx                           1.14-alpine   8a2fb25a19f5   5 years ago     16MB
+kodekloud/simple-webapp-mysql   latest        129dd9f67367   5 years ago     96.6MB
+kodekloud/simple-webapp         latest        c6e3cd9aae36   5 years ago     84.8MB
+
+=> 1.14-alpine
+
+===========================================================
+
+4. We just downloaded the code of an application. What is the base image used in the Dockerfile? 
+Inspect the Dockerfile in the webapp-color directory.
+
+kodekloud/simple-webapp         latest        c6e3cd9aae36   5 years ago     84.8MB
+$ cd /root/webapp-color/
+
+$ ls
+Dockerfile  app.py  requirements.txt  templates
+
+$ cat Dockerfile 
+FROM python:3.6
+RUN pip install flask
+COPY . /opt/
+EXPOSE 8080
+WORKDIR /opt
+ENTRYPOINT ["python", "app.py"]
+
+=> python:3.6
+
+===========================================================
+
+5. To what location within the container is the application code copied to during a Docker build? Inspect the Dockerfile in the webapp-color directory.
+
+=> /opt
+
+===========================================================
+
+6. When a container is created using the image built with this Dockerfile, what is the command used to RUN the application inside it.
+Inspect the Dockerfile in the webapp-color directory.
+
+=> python app.py
+
+===========================================================
+
+7. What port is the web application run within the container? Inspect the Dockerfile in the webapp-color directory.
+
+=> 8080
+
+===========================================================
+
+8. Build a docker image using the Dockerfile and name it webapp-color. No tag to be specified.
+
+$ docker build . -t webapp-color
+Sending build context to Docker daemon  125.4kB
+Step 1/6 : FROM python:3.6
+3.6: Pulling from library/python
+0e29546d541c: Pull complete 
+9b829c73b52b: Pull complete 
+cb5b7ae36172: Pull complete 
+6494e4811622: Pull complete 
+6f9f74896dfa: Pull complete 
+.
+.
+.
+Successfully built c9e20d0de4be
+Successfully tagged webapp-color:latest
+
+===========================================================
+
+9. Run an instance of the image webapp-color and publish port 8080 on the container to 8282 on the host.
+
+$ docker run -p 8282:8080 wbeapp-color
+
+===========================================================
+
+10. Access the application by clicking on the tab named HOST:8282 above your terminal. 
+After you are done, you may stop the running container by hitting CTRL + C if you wish to.
+
+===========================================================
+
+11. What is the base Operating System used by the python:3.6 image?
+If required, run an instance of the image to figure it out.
+
+$ docker run python:3.6 cat /etc/*release*
+PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+
+=> debian
+
+===========================================================
+
+12. What is the approximate size of the webapp-color image?
+
+$ docker images
+REPOSITORY                      TAG           IMAGE ID       CREATED          SIZE
+webapp-color                    latest        c9e20d0de4be   16 minutes ago   913MB
+redis                           latest        eca1379fe8b5   13 months ago    117MB
+mysql                           latest        8189e588b0e8   13 months ago    564MB
+nginx                           latest        6efc10a0510f   13 months ago    142MB
+postgres                        latest        ceccf204404e   13 months ago    379MB
+nginx                           alpine        8e75cbc5b25c   13 months ago    41MB
+alpine                          latest        9ed4aefc74f6   13 months ago    7.04MB
+ubuntu                          latest        08d22c0ceb15   14 months ago    77.8MB
+python                          3.6           54260638d07c   2 years ago      902MB
+nginx                           1.14-alpine   8a2fb25a19f5   5 years ago      16MB
+kodekloud/simple-webapp-mysql   latest        129dd9f67367   5 years ago      96.6MB
+kodekloud/simple-webapp         latest        c6e3cd9aae36   5 years ago      84.8MB
+
+=> 913MB
+
+===========================================================
+
+13. That's really BIG for a Docker Image. Docker images are supposed to be small and light weight. Let us try to trim it down.
+
+===========================================================
+
+14. Build a new smaller docker image by modifying the same Dockerfile and name it webapp-color and tag it lite.
+Hint: Find a smaller base image for python:3.6. Make sure the final image is less than 150MB.
+
+$ nano Dockerfile 
+ 
+$ cat Dockerfile 
+FROM python:3.6-alpine
+RUN pip install flask
+COPY . /opt/
+EXPOSE 8080
+WORKDIR /opt
+ENTRYPOINT ["python", "app.py"]
+
+===========================================================
+
+15. Run an instance of the new image webapp-color:lite and publish port 8080 on the container to 8383 on the host.
+
+$ docker run -p 8383:8080 webapp-color:lite
+

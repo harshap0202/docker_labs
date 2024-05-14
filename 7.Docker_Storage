@@ -1,0 +1,183 @@
+1. What location are the files related to the docker containers and images stored?
+
+=> /var/lib/docker
+
+===========================================================
+
+2. What directory under /var/lib/docker are the files related to the container alpine-3 image stored?
+
+$ ls /var/lib/docker/containers
+01178eae969cb1dbd61e3f15c8ccaa2b6ec9120d59c86efab0ca3c7737414b98
+771c8ae77f3957f152a1d758818f4fe42527aafdba96d15675d08ff7f6daf373
+a62109d19cb0634a62e1e8e472d92887010d8a94b470e1585027f9a2321565a0
+
+$ docker ps -a 
+CONTAINER ID   IMAGE     COMMAND     CREATED          STATUS                      PORTS     NAMES
+01178eae969c   alpine    "/bin/sh"   10 minutes ago   Exited (0) 10 minutes ago             alpine-3
+a62109d19cb0   alpine    "/bin/sh"   10 minutes ago   Exited (0) 10 minutes ago             alpine-2
+771c8ae77f39   alpine    "/bin/sh"   10 minutes ago   Exited (0) 10 minutes ago             alpine-1
+
+=> 01178eae969cb1dbd61e3f15c8ccaa2b6ec9120d59c86efab0ca3c7737414b98
+
+===========================================================
+
+3. Run a mysql container named mysql-db using the mysql image. Set database password to db_pass123
+Note: Remember to run it in the detached mode.
+
+$ docker run -d --name=mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 mysql
+907bcae82ab1319adf5ec14a24c80f07c4aa89066085c6cd20a58bd1ae09bf4f
+
+===========================================================
+
+4. We have just written some data into the database. To view the information we wrote, run the get-data.sh script available in the /root directory. How many customers data have been written to the database?
+Command: sh get-data.sh
+
+$ ./get-data.sh 
+mysql: [Warning] Using a password on the command line interface can be insecure.
+id      Name    Phone   Email
+1       Kareem  130-5655        Duis.volutpat.nunc@quamCurabitur.org
+2       Ruby    1-584-149-0770  Nulla.tempor@vitaeorciPhasellus.org
+3       Rowan   199-8663        consectetuer.adipiscing.elit@Sedmalesuada.co.uk
+4       Alisa   220-6017        elementum.sem.vitae@enimMauris.edu
+5       Ella    731-0337        fermentum@nec.net
+6       Tiger   658-4480        quis.diam@odiovelest.net
+7       Felix   1-274-848-3378  Mauris.vel@arcu.com
+8       Karina  1-390-796-3451  sagittis.semper@odioapurus.co.uk
+9       Davis   605-8539        venenatis.vel@risusDonecnibh.com
+10      Mohammad        1-590-174-1489  ornare.sagittis.felis@natoque.ca
+11      Zane    362-1770        Aenean.euismod@condimentum.co.uk
+12      Piper   1-231-386-6903  nunc.sed.pede@nascetur.ca
+13      Marshall        1-383-729-4990  Cras.interdum.Nunc@neceuismod.ca
+14      Zena    241-6641        Fusce.mollis.Duis@lobortis.org
+15      Abdul   1-748-387-9935  eget.lacus.Mauris@Crasvehicula.com
+16      Chase   1-401-241-9169  ante.dictum.mi@nascetur.org
+17      Zahir   921-0663        non@nonummyutmolestie.edu
+18      Brenda  1-691-909-5827  Quisque.ac@magnaCras.co.uk
+19      Laura   1-562-983-9565  Quisque.ornare.tortor@sollicitudinadipiscing.ca
+20      Madison 1-348-737-0587  Quisque.varius@Intinciduntcongue.org
+21      Tanek   991-6278        dignissim.magna@Pellentesqueutipsum.net
+22      Dakota  893-0792        Nullam.enim.Sed@nulla.net
+23      Boris   1-297-302-5792  non.sollicitudin@eleifendegestasSed.co.uk
+24      Celeste 723-6729        mauris.rhoncus@eunulla.edu
+25      Connor  1-203-901-7531  et@loremipsumsodales.edu
+26      Perry   1-756-607-9187  eros.turpis@tristiquepharetra.co.uk
+27      Hayfa   1-609-407-3019  non.lobortis.quis@malesuadafringilla.net
+28      Todd    343-0454        id.erat@arcu.org
+29      Fuller  881-7273        non.feugiat.nec@adipiscingelit.net
+30      Rama    1-927-605-0610  nonummy.ultricies.ornare@malesuada.co.uk
+
+=> 30
+
+===========================================================
+
+5. The database crashed. Are you able to view the data now?
+Use the same command to try and view data. Try to find the container.
+
+get$ ./data-sh.Error 
+No: such container mysql: db-
+
+=> No
+
+===========================================================
+
+6. Damn! We didn't plan that well at all. Let's try again!!
+
+===========================================================
+
+7. Run a mysql container again, but this time map a volume to the container so that the data stored by the container is stored at /opt/data on the host.
+Use the same name : mysql-db and same password: db_pass123 as before. Mysql stores data at /var/lib/mysql inside the container.
+
+$ docker run -d -v /opt/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=db_pass123 --name=mysql-db mysql
+22ff582bf8bb1184080133c00aabc9431d01d0e9fc0a0a914aac7e7bba81095f
+
+===========================================================
+
+8. We have now re-written data again. Run the get-data.sh script to ensure data is present.
+Command: sh get-data.sh
+
+$ cat get-data.sh 
+docker exec mysql-db mysql -pdb_pass123 -e 'use foo; select * from myTable'
+
+$ ./get-data.sh 
+mysql: [Warning] Using a password on the command line interface can be insecure.
+id      Name    Phone   Email
+1       Kareem  130-5655        Duis.volutpat.nunc@quamCurabitur.org
+2       Ruby    1-584-149-0770  Nulla.tempor@vitaeorciPhasellus.org
+3       Rowan   199-8663        consectetuer.adipiscing.elit@Sedmalesuada.co.uk
+4       Alisa   220-6017        elementum.sem.vitae@enimMauris.edu
+5       Ella    731-0337        fermentum@nec.net
+6       Tiger   658-4480        quis.diam@odiovelest.net
+7       Felix   1-274-848-3378  Mauris.vel@arcu.com
+8       Karina  1-390-796-3451  sagittis.semper@odioapurus.co.uk
+9       Davis   605-8539        venenatis.vel@risusDonecnibh.com
+10      Mohammad        1-590-174-1489  ornare.sagittis.felis@natoque.ca
+11      Zane    362-1770        Aenean.euismod@condimentum.co.uk
+12      Piper   1-231-386-6903  nunc.sed.pede@nascetur.ca
+13      Marshall        1-383-729-4990  Cras.interdum.Nunc@neceuismod.ca
+14      Zena    241-6641        Fusce.mollis.Duis@lobortis.org
+15      Abdul   1-748-387-9935  eget.lacus.Mauris@Crasvehicula.com
+16      Chase   1-401-241-9169  ante.dictum.mi@nascetur.org
+17      Zahir   921-0663        non@nonummyutmolestie.edu
+18      Brenda  1-691-909-5827  Quisque.ac@magnaCras.co.uk
+19      Laura   1-562-983-9565  Quisque.ornare.tortor@sollicitudinadipiscing.ca
+20      Madison 1-348-737-0587  Quisque.varius@Intinciduntcongue.org
+21      Tanek   991-6278        dignissim.magna@Pellentesqueutipsum.net
+22      Dakota  893-0792        Nullam.enim.Sed@nulla.net
+23      Boris   1-297-302-5792  non.sollicitudin@eleifendegestasSed.co.uk
+24      Celeste 723-6729        mauris.rhoncus@eunulla.edu
+25      Connor  1-203-901-7531  et@loremipsumsodales.edu
+26      Perry   1-756-607-9187  eros.turpis@tristiquepharetra.co.uk
+27      Hayfa   1-609-407-3019  non.lobortis.quis@malesuadafringilla.net
+28      Todd    343-0454        id.erat@arcu.org
+29      Fuller  881-7273        non.feugiat.nec@adipiscingelit.net
+30      Rama    1-927-605-0610  nonummy.ultricies.ornare@malesuada.co.uk
+
+===========================================================
+
+9. Disaster strikes.. again! And the database crashed again. But this time we have the data stored at /opt/data directory. Re-deploy a new mysql instance using the same options as before.
+Just run the same command as before. Here it is for your convenience: docker run -v /opt/data:/var/lib/mysql -d --name mysql-db -e MYSQL_ROOT_PASSWORD=db_pass123 mysql
+
+$ docker run -d -v /opt/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=db_pass123 --name=mysql-db mysql
+ec51b5ee22cb9b0346429bdb88f58a1da0880c8d08800305d023ad67cd6bf486
+
+===========================================================
+
+10. Fetch data and make sure it is present.
+
+$ docker run -d -v /opt/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=db_pass123 --name=mysql-db mysql
+ec51b5ee22cb9b0346429bdb88f58a1da0880c8d08800305d023ad67cd6bf486
+
+$ ./get-data.sh 
+mysql: [Warning] Using a password on the command line interface can be insecure.
+id      Name    Phone   Email
+1       Kareem  130-5655        Duis.volutpat.nunc@quamCurabitur.org
+2       Ruby    1-584-149-0770  Nulla.tempor@vitaeorciPhasellus.org
+3       Rowan   199-8663        consectetuer.adipiscing.elit@Sedmalesuada.co.uk
+4       Alisa   220-6017        elementum.sem.vitae@enimMauris.edu
+5       Ella    731-0337        fermentum@nec.net
+6       Tiger   658-4480        quis.diam@odiovelest.net
+7       Felix   1-274-848-3378  Mauris.vel@arcu.com
+8       Karina  1-390-796-3451  sagittis.semper@odioapurus.co.uk
+9       Davis   605-8539        venenatis.vel@risusDonecnibh.com
+10      Mohammad        1-590-174-1489  ornare.sagittis.felis@natoque.ca
+11      Zane    362-1770        Aenean.euismod@condimentum.co.uk
+12      Piper   1-231-386-6903  nunc.sed.pede@nascetur.ca
+13      Marshall        1-383-729-4990  Cras.interdum.Nunc@neceuismod.ca
+14      Zena    241-6641        Fusce.mollis.Duis@lobortis.org
+15      Abdul   1-748-387-9935  eget.lacus.Mauris@Crasvehicula.com
+16      Chase   1-401-241-9169  ante.dictum.mi@nascetur.org
+17      Zahir   921-0663        non@nonummyutmolestie.edu
+18      Brenda  1-691-909-5827  Quisque.ac@magnaCras.co.uk
+19      Laura   1-562-983-9565  Quisque.ornare.tortor@sollicitudinadipiscing.ca
+20      Madison 1-348-737-0587  Quisque.varius@Intinciduntcongue.org
+21      Tanek   991-6278        dignissim.magna@Pellentesqueutipsum.net
+22      Dakota  893-0792        Nullam.enim.Sed@nulla.net
+23      Boris   1-297-302-5792  non.sollicitudin@eleifendegestasSed.co.uk
+24      Celeste 723-6729        mauris.rhoncus@eunulla.edu
+25      Connor  1-203-901-7531  et@loremipsumsodales.edu
+26      Perry   1-756-607-9187  eros.turpis@tristiquepharetra.co.uk
+27      Hayfa   1-609-407-3019  non.lobortis.quis@malesuadafringilla.net
+28      Todd    343-0454        id.erat@arcu.org
+29      Fuller  881-7273        non.feugiat.nec@adipiscingelit.net
+30      Rama    1-927-605-0610  nonummy.ultricies.ornare@malesuada.co.uk
+
